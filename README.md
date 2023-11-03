@@ -1,1 +1,1 @@
-# bus-times
+# BusTimes
