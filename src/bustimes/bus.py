@@ -1,5 +1,5 @@
 import requests
-from BusTimes import process_data
+from bustimes import process_data
 
 class Bus:
 
