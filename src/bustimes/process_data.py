@@ -48,11 +48,11 @@ def process_bus_departure_times(bus_data: dict):
             IsDelayed: bool = False
             IsEarly: bool = False
             destination: str = departure['Destination']
-            destination = destination.replace('STN', 'Station')
-            destination = destination.replace('EXP', 'Express')
-            destination = destination.replace('EXCH', 'Exchange')
-            destination = destination.replace('CTRL', 'Central')
-            destination = destination.replace('CTR', 'Centre')
+            destination = destination.replace('STN', 'Station', 1)
+            destination = destination.replace('EXP', 'Express', 1)
+            destination = destination.replace('EXCH', 'Exchange', 1)
+            destination = destination.replace('CTRL', 'Central', 1)
+            destination = destination.replace('CTR', 'Centre', 1)
             destination = string.capwords(destination, sep=' ')
             LeaveTime: str = departure['ExpectedLeaveTime']
             LeaveTime = LeaveTime.split(' ')[0]
