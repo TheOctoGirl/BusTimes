@@ -43,7 +43,6 @@ def process_bus_departure_times(bus_data: dict):
     departure_times = {}
     for routes in bus_data:
         departure_times.update({routes['RouteNo']:[]})
-        print(type(routes['Schedules']))
         for departure in routes['Schedules']:
             RealTime: bool = False
             IsDelayed: bool = False
