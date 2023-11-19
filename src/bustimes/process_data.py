@@ -26,7 +26,7 @@ def process_bus_stop(bus_data: dict):
         AtStreet = None
     else:
         AtStreet = string.capwords(AtStreet, sep=' ')
-    Routes: str = bus_data['Routes']
+    Routes: str = bus_data['Routes'].lstrip('0')
     return {'StopNumber': StopNumber,'StopName': StopName, 'BayNumber': BayNumber, 'AtStreet': AtStreet, 'Routes': Routes}
 
 def process_multiple_bus_stops(bus_data: dict):
@@ -35,14 +35,14 @@ def process_multiple_bus_stops(bus_data: dict):
         bus_stop_data = process_bus_stop(bus_stop)
         if 'Platform' in bus_stop_data['StopName'] or bus_stop_data['StopName'].endswith('New'):
             continue
-        else:
-            bus_stops.append(bus_stop_data)
+        bus_stops.append(bus_stop_data)
     return bus_stops
 
 def process_bus_departure_times(bus_data: dict):
     departure_times = {}
     for routes in bus_data:
-        departure_times.update({routes['RouteNo']:[]})
+        route_number_without_leading_zero = routes['RouteNo'].lstrip('0')
+        departure_times.update({route_number_without_leading_zero:[]})
         for departure in routes['Schedules']:
             RealTime: bool = False
             IsDelayed: bool = False
@@ -70,6 +70,6 @@ def process_bus_departure_times(bus_data: dict):
             else:
                 CancelledTrip = False
             CountdownTime: int = departure['ExpectedCountdown']
-            departure_times[routes['RouteNo']].append({"RouteNumber": routes['RouteNo'], "Destination": destination, "LeaveTime": LeaveTime, "CountdownTime": CountdownTime, "RealTime": RealTime, "IsDelayed": IsDelayed, "IsEarly": IsEarly, "CancelledTrip": CancelledTrip})
+            departure_times[route_number_without_leading_zero].append({"RouteNumber": route_number_without_leading_zero, "Destination": destination, "LeaveTime": LeaveTime, "CountdownTime": CountdownTime, "RealTime": RealTime, "IsDelayed": IsDelayed, "IsEarly": IsEarly, "CancelledTrip": CancelledTrip})
     return departure_times
 
