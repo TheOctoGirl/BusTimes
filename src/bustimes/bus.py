@@ -20,7 +20,9 @@ class Bus:
             bus_data = process_data.process_bus_stop(bus_data)
             return bus_data
             
-    def get_bus_stops_around_location(self, route: int = None, lat: float = None, long: float = None, radius: int = 500):
+    def get_bus_stops_around_location(self,
+                                    route: int = None, lat: float = None,
+                                    long: float = None, radius: int = 500):
         ''' Gets bus stop info about all bus stops around a specific location.\n
         Args:
             route (int): (Optional) Used to filter stops by bus route.\n
@@ -32,29 +34,28 @@ class Bus:
         headers = {'Accept': 'application/json'}
         bus_data = requests.get('https://api.translink.ca/rttiapi/v1/stops', params=params, headers=headers)
         if bus_data.status_code == 200:
+            bus_data = bus_data.json()
             bus_data = process_data.process_multiple_bus_stops(bus_data)
             return bus_data
         else:
             bus_data = bus_data.json()
             if bus_data['Code'] == '10001':
                 raise InvalidAPIKeyError('Invalid API Key')
-            elif bus_data['Code'] == '10002':
+            if bus_data['Code'] == '10002':
                 raise DBConnectionError('Database Connection Error')
-            elif bus_data['Code'] == '1001':
+            if bus_data['Code'] == '1001':
                 raise InvalidBusStopError('Invalid Stop Number')
-            elif bus_data['Code'] == '1002':
+            if bus_data['Code'] == '1002':
                 raise InvalidBusStopError('Stop Not Found')
-            elif bus_data['Code'] == '1011':
+            if bus_data['Code'] == '1011':
                 raise InvalidLocationError('Invalid Location')
-            elif bus_data['Code'] == '1012':
+            if bus_data['Code'] == '1012':
                 raise InvalidBusStopError('Stop Not Found')
-            elif bus_data['Code'] == '1014':
+            if bus_data['Code'] == '1014':
                 raise RadiusTooLargeError('Radius Too Large')
-            elif bus_data['Code'] == '1015':
+            if bus_data['Code'] == '1015':
                 raise InvalidBusRouteError('Invalid Route')
-            else:
-                raise UnknownError(bus_data['Message'])
-            
+            raise UnknownError(bus_data['Message'])
 
     def get_bus_times(self, stop_id: str, route: str = None, number_of_departures: int = 6):
         ''' Gets bus departure times for a specific bus stop.\n
@@ -70,22 +71,19 @@ class Bus:
             bus_data = bus_data.json()
             bus_data = process_data.process_bus_departure_times(bus_data)
             return bus_data
-        
-        else:
-            bus_data = bus_data.json()
-            if bus_data['Code'] == '10001':
-                raise InvalidAPIKeyError('Invalid API Key')
-            elif bus_data['Code'] == '10002':
-                raise DBConnectionError('Database Connection Error')
-            elif bus_data['Code'] == '3001':
-                raise InvalidBusStopError('Invalid Stop Number')
-            elif bus_data['Code'] == '3002':
-                raise InvalidBusStopError('Stop Not Found')
-            elif bus_data['Code'] == '3004':
-                raise InvalidBusRouteError('Invalid Route')
-            else:
-                raise UnknownError(bus_data['Message'])
-            
+        bus_data = bus_data.json()
+        if bus_data['Code'] == '10001':
+            raise InvalidAPIKeyError('Invalid API Key')
+        if bus_data['Code'] == '10002':
+            raise DBConnectionError('Database Connection Error')
+        if bus_data['Code'] == '3001':
+            raise InvalidBusStopError('Invalid Stop Number')
+        if bus_data['Code'] == '3002':
+            raise InvalidBusStopError('Stop Not Found')
+        if bus_data['Code'] == '3004':
+            raise InvalidBusRouteError('Invalid Route')
+        raise UnknownError(bus_data['Message'])
+
 class DBConnectionError(Exception):
     pass
 
