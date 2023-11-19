@@ -14,7 +14,7 @@ class Bus:
         
         params = {'apikey': self.api_key}
         headers = {'Accept': 'application/json'}
-        bus_data = requests.get(f'https://api.translink.ca/rttiapi/v1/stops/{stop_id}', params=params, headers=headers)
+        bus_data = requests.get(f'https://api.translink.ca/rttiapi/v1/stops/{stop_id}', params=params, headers=headers, timeout=5)
         if bus_data.status_code == 200:
             bus_data = bus_data.json()
             bus_data = process_data.process_bus_stop(bus_data)
@@ -32,7 +32,7 @@ class Bus:
         '''   
         params = {'apikey': self.api_key, 'RouteNo':route, 'lat': lat, 'long': long, 'radius': radius}
         headers = {'Accept': 'application/json'}
-        bus_data = requests.get('https://api.translink.ca/rttiapi/v1/stops', params=params, headers=headers)
+        bus_data = requests.get('https://api.translink.ca/rttiapi/v1/stops', params=params, headers=headers, timeout=5)
         if bus_data.status_code == 200:
             bus_data = bus_data.json()
             bus_data = process_data.process_multiple_bus_stops(bus_data)
@@ -57,7 +57,7 @@ class Bus:
                 raise InvalidBusRouteError('Invalid Route')
             raise UnknownError(bus_data['Message'])
 
-    def get_bus_times(self, stop_id: str, route: str = None, number_of_departures: int = 6):
+    def get_bus_times(self, stop_id: str, number_of_departures: int = 6):
         ''' Gets bus departure times for a specific bus stop.\n
         Args:
             stop_id (str): The bus stop number.\n
@@ -66,7 +66,7 @@ class Bus:
         '''
         params = {'apikey': self.api_key, 'count': number_of_departures}
         headers = {'Accept': 'application/json'}
-        bus_data = requests.get(f'https://api.translink.ca/rttiapi/v1/stops/{stop_id}/estimates', params=params, headers=headers)
+        bus_data = requests.get(f'https://api.translink.ca/rttiapi/v1/stops/{stop_id}/estimates', params=params, headers=headers, timeout=5)
         if bus_data.status_code == 200:
             bus_data = bus_data.json()
             bus_data = process_data.process_bus_departure_times(bus_data)
