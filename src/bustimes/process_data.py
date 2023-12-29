@@ -2,32 +2,28 @@ import string
 import re
 
 def process_bus_stop(bus_data: dict):
-    StopNumber = int(bus_data['StopNo'])
-    StopName: str = bus_data['Name']
-    if StopName.startswith('NB'):
-        StopName = StopName.replace('NB', 'Northbound')
-    if StopName.startswith('SB'):
-        StopName = StopName.replace('SB', 'Southbound')
-    if StopName.startswith('EB'):
-        StopName = StopName.replace('EB', 'Eastbound')
-    if StopName.startswith('WB'):
-        StopName = StopName.replace('WB', 'Westbound')
-    StopName = StopName.replace('FS', '@')
-    StopName = StopName.replace('NS', '@')
-    StopName = StopName.replace('STN', 'Station')
-    StopName = string.capwords(StopName, sep=' ')
-    BayNumber: str = bus_data['BayNo']
-    if BayNumber == 'N':
-        BayNumber = None
+    stop_number = int(bus_data['StopNo'])
+    stop_name: str = bus_data['Name']
+    stop_name = re.sub(r'\bNB\b', 'Northbound', stop_name)
+    stop_name = re.sub(r'\bSB\b', 'Southbound', stop_name)
+    stop_name = re.sub(r'\bEB\b', 'Eastbound', stop_name)
+    stop_name = re.sub(r'\bWB\b', 'Westbound', stop_name)
+    stop_name = re.sub(r'\bFS\b', '@', stop_name)
+    stop_name = re.sub(r'\bNS\b', '@', stop_name)
+    stop_name = re.sub(r'\bSTN\b', 'Station', stop_name)
+    stop_name = string.capwords(stop_name, sep=' ')
+    bay_number: str = bus_data['BayNo']
+    if bay_number == 'N':
+        bay_number = None
     else:
-        BayNumber = int(BayNumber)
-    AtStreet: str = bus_data['AtStreet']
-    if re.match(r'BAY \d+', AtStreet):
-        AtStreet = None
+        bay_number = int(bay_number)
+    at_street: str = bus_data['AtStreet']
+    if re.match(r'BAY \d+', at_street):
+        at_street = None
     else:
-        AtStreet = string.capwords(AtStreet, sep=' ')
-    Routes: str = bus_data['Routes'].lstrip('0')
-    return {'StopNumber': StopNumber,'StopName': StopName, 'BayNumber': BayNumber, 'AtStreet': AtStreet, 'Routes': Routes}
+        at_street = string.capwords(at_street, sep=' ')
+    routes: str = bus_data['Routes'].lstrip('0')
+    return {'StopNumber': stop_number,'StopName': stop_name, 'BayNumber': bay_number, 'AtStreet': at_street, 'Routes': routes}
 
 def process_multiple_bus_stops(bus_data: dict):
     bus_stops = []
@@ -44,32 +40,32 @@ def process_bus_departure_times(bus_data: dict):
         route_number_without_leading_zero = routes['RouteNo'].lstrip('0')
         departure_times.update({route_number_without_leading_zero:[]})
         for departure in routes['Schedules']:
-            RealTime: bool = False
-            IsDelayed: bool = False
-            IsEarly: bool = False
+            real_time: bool = False
+            is_delayed: bool = False
+            is_early: bool = False
             destination: str = departure['Destination']
-            destination = destination.replace('STN', 'Station')
+            destination = re.sub(r'\bSTN\b', 'Station', destination)
             destination = re.sub(r'\bEXP\b', 'Express', destination)
             destination = re.sub(r'\bEXCH\b', 'Exchange', destination)
-            destination = destination.replace('CTRL', 'Central')
-            destination = destination.replace('CTR', 'Centre')
+            destination = re.sub(r'\bCTRL\b', 'Central', destination)
+            destination = re.sub(r'\bCTR\b', 'Centre', destination)
             destination = string.capwords(destination, sep=' ')
-            LeaveTime: str = departure['ExpectedLeaveTime']
-            LeaveTime = LeaveTime.split(' ')[0]
+            leave_time: str = departure['ExpectedLeaveTime']
+            leave_time = leave_time.split(' ')[0]
             status: str = departure['ScheduleStatus']
             if status == ' ':
-                RealTime = True
+                real_time = True
             if status == '-':
-                RealTime = True
-                IsDelayed = True
+                real_time = True
+                is_delayed = True
             if status == '+':
-                RealTime = True
-                IsEarly = True
+                real_time = True
+                is_early = True
             if departure['CancelledTrip'] == 'true' or departure['CancelledStop'] == 'true':
-                CancelledTrip = True
+                cancelled_trip = True
             else:
-                CancelledTrip = False
-            CountdownTime: int = departure['ExpectedCountdown']
-            departure_times[route_number_without_leading_zero].append({"RouteNumber": route_number_without_leading_zero, "Destination": destination, "LeaveTime": LeaveTime, "CountdownTime": CountdownTime, "RealTime": RealTime, "IsDelayed": IsDelayed, "IsEarly": IsEarly, "CancelledTrip": CancelledTrip})
+                cancelled_trip = False
+            countdown_time: int = departure['ExpectedCountdown']
+            departure_times[route_number_without_leading_zero].append({"RouteNumber": route_number_without_leading_zero, "Destination": destination, "LeaveTime": leave_time, "CountdownTime": countdown_time, "RealTime": real_time, "IsDelayed": is_delayed, "IsEarly": is_early, "CancelledTrip": cancelled_trip})
     return departure_times
 
