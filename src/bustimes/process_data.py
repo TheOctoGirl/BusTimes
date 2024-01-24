@@ -61,7 +61,7 @@ def process_bus_departure_times(bus_data: dict):
             if status == '+':
                 real_time = True
                 is_early = True
-            if departure['CancelledTrip'] == 'true' or departure['CancelledStop'] == 'true':
+            if departure['CancelledTrip'] or departure['CancelledStop']:
                 cancelled_trip = True
             else:
                 cancelled_trip = False
