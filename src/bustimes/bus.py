@@ -57,7 +57,7 @@ class Bus:
                 raise InvalidBusRouteError('Invalid Route')
             raise UnknownError(bus_data['Message'])
 
-    def get_bus_times(self, stop_id: int, route: int = None, number_of_departures: int = 6):
+    def get_bus_times(self, stop_id: int, route: str = None, number_of_departures: int = 6):
         ''' Gets bus departure times for a specific bus stop.\n
         Args:
             stop_id (int): The bus stop number.\n
