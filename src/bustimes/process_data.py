@@ -68,4 +68,3 @@ def process_bus_departure_times(bus_data: dict):
             countdown_time: int = departure['ExpectedCountdown']
             departure_times[route_number_without_leading_zero].append({"RouteNumber": route_number_without_leading_zero, "Destination": destination, "LeaveTime": leave_time, "CountdownTime": countdown_time, "RealTime": real_time, "IsDelayed": is_delayed, "IsEarly": is_early, "CancelledTrip": cancelled_trip})
     return departure_times
-
